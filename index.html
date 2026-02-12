@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="description" content="A cute Valentine's Day page to ask someone to be your Valentine!">
   <meta name="theme-color" content="#1a0a2e">
   <title>for kriya 💌</title>
@@ -17,10 +17,12 @@
     body {
       margin: 0;
       min-height: 100vh;
+      min-height: 100dvh;
       background: linear-gradient(135deg, #1a0a2e 0%, #2d1b69 25%, #44107a 50%, #893168 75%, #ff6b9d 100%);
       background-size: 400% 400%;
       animation: gradientShift 8s ease infinite;
       overflow: hidden;
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
     }
 
     @keyframes gradientShift {
@@ -437,6 +439,152 @@
       letter-spacing: 2px;
       text-transform: uppercase;
     }
+
+    /* ====== IPHONE / MOBILE RESPONSIVE ====== */
+    @media (max-width: 480px) {
+      /* Glass card — tighter padding, fill width */
+      .glass-card {
+        padding: 1.5rem 1.2rem;
+        border-radius: 20px;
+        margin: 0 0.75rem;
+      }
+
+      /* Hello Kitty GIF smaller on phone */
+      #imageDisplay {
+        height: 180px !important;
+        border-radius: 16px;
+      }
+
+      /* Question text */
+      #valentineQuestion {
+        font-size: 1.6rem !important;
+      }
+
+      .subtext {
+        font-size: 0.7rem;
+        letter-spacing: 1.5px;
+      }
+
+      /* Buttons */
+      #yesButton {
+        font-size: 1rem !important;
+        padding: 0.6rem 1.5rem !important;
+        min-width: 80px !important;
+      }
+      #noButton {
+        font-size: 0.85rem;
+        padding: 0.4rem 1rem;
+      }
+
+      /* Slideshow — images/video fit phone */
+      .wrapped-slide {
+        padding: 1rem 0.75rem;
+      }
+      .wrapped-slide .img-wrapper {
+        max-height: 50vh;
+        max-width: 90vw;
+        border-radius: 18px;
+        border-width: 2px;
+      }
+      .wrapped-slide img {
+        max-height: 50vh;
+        max-width: 90vw;
+      }
+      .wrapped-slide video {
+        max-height: 50vh;
+        max-width: 90vw;
+        border-radius: 18px;
+      }
+
+      /* Captions */
+      .wrapped-slide .caption {
+        font-size: 1.15rem;
+        margin-top: 1rem;
+        padding: 0 0.5rem;
+      }
+      .wrapped-slide .subcaption {
+        font-size: 0.75rem;
+      }
+
+      /* Progress bar — respect notch safe area */
+      .wrapped-progress-container {
+        top: calc(0.75rem + env(safe-area-inset-top));
+        left: 0.75rem;
+        right: 0.75rem;
+      }
+
+      /* Tap hint — above home indicator */
+      .wrapped-tap-hint {
+        bottom: calc(1.5rem + env(safe-area-inset-bottom));
+        font-size: 0.75rem;
+      }
+
+      /* Final slide */
+      .final-heart {
+        font-size: 3.5rem;
+        margin-bottom: 0.75rem;
+      }
+      .final-title {
+        font-size: 1.6rem;
+        padding: 0 1rem;
+      }
+      .final-subtitle {
+        font-size: 0.95rem;
+        padding: 0 1rem;
+      }
+      .final-sign-off {
+        font-size: 0.75rem;
+        margin-top: 1rem;
+      }
+      .replay-btn {
+        margin-top: 1.5rem;
+        padding: 0.4rem 1.2rem;
+        font-size: 0.8rem;
+      }
+    }
+
+    /* Extra small phones (iPhone SE, etc.) */
+    @media (max-width: 375px) {
+      .glass-card {
+        padding: 1.2rem 1rem;
+      }
+      #imageDisplay {
+        height: 150px !important;
+      }
+      #valentineQuestion {
+        font-size: 1.4rem !important;
+      }
+      .wrapped-slide .img-wrapper {
+        max-height: 45vh;
+      }
+      .wrapped-slide img,
+      .wrapped-slide video {
+        max-height: 45vh;
+      }
+      .wrapped-slide .caption {
+        font-size: 1rem;
+      }
+      .final-title {
+        font-size: 1.4rem;
+      }
+    }
+
+    /* Landscape on phone — keep images visible */
+    @media (max-height: 500px) {
+      .wrapped-slide .img-wrapper {
+        max-height: 40vh;
+      }
+      .wrapped-slide img,
+      .wrapped-slide video {
+        max-height: 40vh;
+      }
+      .wrapped-slide .caption {
+        font-size: 1rem;
+        margin-top: 0.5rem;
+      }
+      .final-heart { font-size: 2.5rem; }
+      .final-title { font-size: 1.3rem; }
+    }
   </style>
   <!-- Preload images -->
   <link rel="preload" as="image" href="./images/image1.gif">
@@ -456,7 +604,7 @@
   <!-- Floating emoji background -->
   <div id="floaters"></div>
 
-  <main class="flex items-center justify-center h-screen relative z-10">
+  <main class="flex items-center justify-center relative z-10" style="min-height:100vh;min-height:100dvh">
     <section class="glass-card flex flex-col items-center max-w-md mx-4">
       <img
         id="imageDisplay"
