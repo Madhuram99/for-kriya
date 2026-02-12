@@ -1001,7 +1001,14 @@
       }
 
       // ---- SPOTIFY WRAPPED SLIDESHOW ----
-      const SLIDE_DURATION = 5000; // 5 seconds per slide auto-advance
+      // Per-slide durations in ms (index matches WRAPPED_SLIDES, last = final slide)
+      const SLIDE_DURATIONS = [
+        6000,   // 1. Little Kriya in red
+        6000,   // 2. Blue dress posing
+        7000,   // 3. Video
+        9000,   // 4. B&W portrait — let it breathe
+        0,      // 5. Final slide (no auto-advance)
+      ];
       const WRAPPED_YEARS = ['', '', '', ''];
 
       function startWrapped() {
@@ -1156,10 +1163,11 @@
             }
           });
 
-          // Animate current segment fill over SLIDE_DURATION
+          // Animate current segment fill over this slide's duration
+          const thisDuration = SLIDE_DURATIONS[index] || 6000;
           requestAnimationFrame(() => {
             const currentSeg = segments[index];
-            currentSeg.fill.style.transitionDuration = (SLIDE_DURATION / 1000) + 's';
+            currentSeg.fill.style.transitionDuration = (thisDuration / 1000) + 's';
             currentSeg.seg.classList.add('filling');
           });
 
@@ -1181,13 +1189,13 @@
             return;
           }
 
-          // Auto-advance after SLIDE_DURATION
+          // Auto-advance after this slide's duration
           autoTimer = setTimeout(() => {
             if (current < slides.length - 1) {
               current++;
               showSlide(current);
             }
-          }, SLIDE_DURATION);
+          }, thisDuration);
         }
 
         function nextSlide() {
