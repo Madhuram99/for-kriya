@@ -395,18 +395,6 @@
       color: #fff;
     }
 
-    /* Hidden YouTube player */
-    #ytPlayer {
-      position: fixed;
-      width: 1px;
-      height: 1px;
-      bottom: 0;
-      left: 0;
-      opacity: 0;
-      pointer-events: none;
-      z-index: -1;
-    }
-
     /* Music toggle button */
     .music-toggle {
       position: fixed;
@@ -457,8 +445,10 @@
   <link rel="preload" as="image" href="./images/image7.gif">
 </head>
 <body>
-  <!-- Hidden YouTube background music -->
-  <iframe id="ytPlayer" src="https://www.youtube.com/embed/UFy11i_rVI8?enablejsapi=1&autoplay=0&loop=1&playlist=UFy11i_rVI8" allow="autoplay" frameborder="0"></iframe>
+  <!-- Background music -->
+  <audio id="bgMusic" loop preload="auto">
+    <source src="./Die With A Smile-(SambalpuriStar.In).mp3" type="audio/mpeg">
+  </audio>
 
   <!-- Music toggle button -->
   <button class="music-toggle" id="musicToggle" title="Toggle music">🔇</button>
@@ -497,26 +487,23 @@
 
   <script>
     (() => {
-      // ---- BACKGROUND MUSIC (YouTube) ----
+      // ---- BACKGROUND MUSIC ----
       const musicToggle = document.getElementById('musicToggle');
-      const ytPlayer = document.getElementById('ytPlayer');
+      const bgMusic = document.getElementById('bgMusic');
+      bgMusic.volume = 0.5;
       let musicPlaying = false;
-      let playerReady = false;
-
-      // Use YouTube IFrame API
-      window.onYouTubeIframeAPIReady = () => {};
 
       function startMusic() {
         if (musicPlaying) return;
-        // Reload iframe with autoplay to start playback
-        ytPlayer.src = 'https://www.youtube.com/embed/UFy11i_rVI8?autoplay=1&loop=1&playlist=UFy11i_rVI8';
-        musicPlaying = true;
-        musicToggle.textContent = '🎵';
-        musicToggle.classList.add('playing');
+        bgMusic.play().then(() => {
+          musicPlaying = true;
+          musicToggle.textContent = '🎵';
+          musicToggle.classList.add('playing');
+        }).catch(() => {});
       }
 
       function stopMusic() {
-        ytPlayer.src = 'https://www.youtube.com/embed/UFy11i_rVI8?autoplay=0&loop=1&playlist=UFy11i_rVI8';
+        bgMusic.pause();
         musicPlaying = false;
         musicToggle.textContent = '🔇';
         musicToggle.classList.remove('playing');
@@ -527,7 +514,7 @@
         if (musicPlaying) { stopMusic(); } else { startMusic(); }
       });
 
-      // Start music on first interaction anywhere on page
+      // Start music on first interaction
       function onFirstInteraction() {
         startMusic();
         document.removeEventListener('click', onFirstInteraction);
