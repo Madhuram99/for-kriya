@@ -119,8 +119,8 @@
       color: rgba(255, 255, 255, 0.7);
       font-weight: 600;
       cursor: pointer;
-      transition: none;
       position: relative;
+      transition: transform 0.2s ease;
     }
 
     /* Sparkle cursor trail */
@@ -386,42 +386,33 @@
       let buttonWidth = 100;
       let fontSize = 20;
 
-      // ---- NO BUTTON DODGE (nudge away from cursor) ----
+      // ---- NO BUTTON DODGE (uses transform, stays in place, with cooldown) ----
       let dodgeCount = 0;
-      const DODGE_DISTANCE = 120;
+      let offsetX = 0;
+      let offsetY = 0;
+      let dodgeCooldown = false;
 
-      noButton.addEventListener('mouseenter', (e) => {
-        const rect = noButton.getBoundingClientRect();
-        const btnCenterX = rect.left + rect.width / 2;
-        const btnCenterY = rect.top + rect.height / 2;
+      noButton.addEventListener('mouseenter', () => {
+        if (dodgeCooldown) return;
+        dodgeCooldown = true;
+        setTimeout(() => { dodgeCooldown = false; }, 300);
 
-        // Direction away from cursor
-        let dx = btnCenterX - e.clientX;
-        let dy = btnCenterY - e.clientY;
-        const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-        dx = (dx / dist) * DODGE_DISTANCE;
-        dy = (dy / dist) * DODGE_DISTANCE;
+        // Pick a random nudge direction
+        const directions = [
+          { x: 150, y: 0 }, { x: -150, y: 0 },
+          { x: 0, y: 100 }, { x: 0, y: -100 },
+          { x: 100, y: -80 }, { x: -100, y: -80 },
+          { x: 100, y: 80 }, { x: -100, y: 80 },
+        ];
+        const dir = directions[Math.floor(Math.random() * directions.length)];
+        offsetX += dir.x;
+        offsetY += dir.y;
 
-        // New position
-        let newLeft = rect.left + dx;
-        let newTop = rect.top + dy;
+        // Keep within reasonable bounds from original spot
+        offsetX = Math.max(-300, Math.min(300, offsetX));
+        offsetY = Math.max(-250, Math.min(250, offsetY));
 
-        // Clamp within screen
-        const margin = 10;
-        newLeft = Math.max(margin, Math.min(newLeft, window.innerWidth - rect.width - margin));
-        newTop = Math.max(margin, Math.min(newTop, window.innerHeight - rect.height - margin));
-
-        // If clamped to same spot (stuck in corner), nudge opposite direction
-        if (Math.abs(newLeft - rect.left) < 5 && Math.abs(newTop - rect.top) < 5) {
-          newLeft = window.innerWidth / 2 - rect.width / 2;
-          newTop = window.innerHeight / 2 - rect.height / 2;
-        }
-
-        noButton.style.position = 'fixed';
-        noButton.style.left = newLeft + 'px';
-        noButton.style.top = newTop + 'px';
-        noButton.style.zIndex = '10';
-        noButton.style.transition = 'left 0.15s ease, top 0.15s ease';
+        noButton.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
 
         // Change Hello Kitty image on each dodge
         dodgeCount++;
