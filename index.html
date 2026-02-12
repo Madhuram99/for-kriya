@@ -163,37 +163,91 @@
       align-items: center;
       justify-content: center;
       opacity: 0;
-      transform: scale(0.8) rotate(-2deg);
-      transition: opacity 0.6s ease, transform 0.6s ease;
+      transform: scale(0.85);
+      transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
       padding: 2rem;
       z-index: 1;
     }
     .wrapped-slide.show {
       opacity: 1;
-      transform: scale(1) rotate(0deg);
+      transform: scale(1);
+    }
+
+    /* Ken Burns: subtle zoom & pan on images */
+    .wrapped-slide .img-wrapper {
+      overflow: hidden;
+      border-radius: 24px;
+      border: 3px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(255, 105, 180, 0.15);
+      max-height: 55vh;
+      max-width: 80vw;
     }
     .wrapped-slide img {
       max-height: 55vh;
       max-width: 80vw;
       object-fit: contain;
-      border-radius: 24px;
-      border: 3px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      display: block;
+      animation: none;
     }
+    .wrapped-slide.show img {
+      animation: kenBurns 6s ease-in-out forwards;
+    }
+    @keyframes kenBurns {
+      0%   { transform: scale(1) translate(0, 0); }
+      100% { transform: scale(1.08) translate(-1%, -1%); }
+    }
+
+    /* Caption animations */
     .wrapped-slide .caption {
       color: #fff;
-      font-size: 1.6rem;
+      font-size: 1.5rem;
       font-weight: 700;
       margin-top: 1.5rem;
       text-align: center;
-      text-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
+      text-shadow: 0 2px 20px rgba(0, 0, 0, 0.6);
       letter-spacing: 0.3px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: none;
     }
+    .wrapped-slide.show .caption {
+      animation: captionIn 0.7s 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    @keyframes captionIn {
+      0%   { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
     .wrapped-slide .subcaption {
-      color: rgba(255, 255, 255, 0.5);
+      color: rgba(255, 255, 255, 0.45);
       font-size: 0.85rem;
       margin-top: 0.5rem;
       font-weight: 500;
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    .wrapped-slide.show .subcaption {
+      animation: captionIn 0.5s 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    /* Year label for each slide */
+    .wrapped-slide .year-label {
+      color: rgba(255, 255, 255, 0.3);
+      font-size: 4rem;
+      font-weight: 700;
+      position: absolute;
+      top: 4rem;
+      left: 50%;
+      transform: translateX(-50%);
+      letter-spacing: 6px;
+      opacity: 0;
+    }
+    .wrapped-slide.show .year-label {
+      animation: yearFade 0.8s 0.1s ease forwards;
+    }
+    @keyframes yearFade {
+      0%   { opacity: 0; transform: translateX(-50%) scale(0.8); }
+      100% { opacity: 0.15; transform: translateX(-50%) scale(1); }
     }
 
     .wrapped-progress-container {
@@ -217,9 +271,13 @@
       background: #fff;
       width: 0%;
       border-radius: 2px;
-      transition: width 0.1s linear;
+      transition: none;
     }
     .wrapped-progress-segment.done .wrapped-progress-fill { width: 100%; }
+    .wrapped-progress-segment.filling .wrapped-progress-fill {
+      width: 100%;
+      transition: width linear;
+    }
 
     .wrapped-tap-hint {
       position: fixed;
@@ -230,6 +288,77 @@
       z-index: 60;
       letter-spacing: 1px;
       text-transform: uppercase;
+      animation: tapPulse 2s ease infinite;
+    }
+    @keyframes tapPulse {
+      0%, 100% { opacity: 0.35; }
+      50% { opacity: 0.7; }
+    }
+
+    /* Final slide special styles */
+    .final-heart {
+      font-size: 5rem;
+      margin-bottom: 1rem;
+      filter: drop-shadow(0 0 30px rgba(255, 107, 157, 0.6));
+      animation: heartPulse 1.2s ease infinite;
+    }
+    @keyframes heartPulse {
+      0%, 100% { transform: scale(1); }
+      15% { transform: scale(1.15); }
+      30% { transform: scale(1); }
+      45% { transform: scale(1.1); }
+      60% { transform: scale(1); }
+    }
+    .final-title {
+      color: #fff;
+      font-size: 2.2rem;
+      font-weight: 700;
+      text-align: center;
+      line-height: 1.4;
+      background: linear-gradient(135deg, #fff, #f9a8d4, #fff);
+      background-size: 300% 300%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: textShimmer 3s ease infinite;
+    }
+    .final-subtitle {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 1.1rem;
+      margin-top: 1rem;
+      font-style: italic;
+      opacity: 0;
+      transform: translateY(15px);
+    }
+    .wrapped-slide.show .final-subtitle {
+      animation: captionIn 0.7s 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    .final-sign-off {
+      color: rgba(255, 255, 255, 0.35);
+      font-size: 0.85rem;
+      margin-top: 1.5rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: 0;
+    }
+    .wrapped-slide.show .final-sign-off {
+      animation: captionIn 0.6s 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    /* Floating hearts on final slide */
+    .final-floating-heart {
+      position: absolute;
+      font-size: 1.2rem;
+      opacity: 0;
+      pointer-events: none;
+      animation: floatHeart 4s ease-in-out infinite;
+    }
+    @keyframes floatHeart {
+      0% { transform: translateY(0) scale(0.8); opacity: 0; }
+      20% { opacity: 0.4; }
+      80% { opacity: 0.4; }
+      100% { transform: translateY(-100px) scale(1.2); opacity: 0; }
     }
 
     /* subtext under question */
@@ -367,8 +496,8 @@
       const WRAPPED_CAPTIONS = [
         "cute since day one, no debate 💗",
         "giving main character energy since forever 🫠",
-        "that smile with the mountains behind you? unreal 🌸",
-        "you + boat rides + that grin = my whole heart 🦋",
+        "you & mom in the mountains = the cutest duo 🌸",
+        "shikara rides with mom, that grin says it all 🦋",
         "and then you grew up and chose violence 💕",
       ];
 
@@ -453,6 +582,9 @@
       });
 
       // ---- SPOTIFY WRAPPED SLIDESHOW ----
+      const SLIDE_DURATION = 5000; // 5 seconds per slide auto-advance
+      const WRAPPED_YEARS = ['', '', '', '', ''];
+
       function startWrapped() {
         const overlay = document.createElement('div');
         overlay.className = 'wrapped-overlay';
@@ -478,42 +610,69 @@
 
         const tapHint = document.createElement('div');
         tapHint.className = 'wrapped-tap-hint';
-        tapHint.textContent = 'tap to continue →';
+        tapHint.textContent = 'tap anywhere to skip';
 
         overlay.appendChild(progressContainer);
         overlay.appendChild(tapHint);
 
-        // Create photo slides
+        // Create photo slides with Ken Burns wrapper
         const slides = WRAPPED_PHOTOS.map((photo, i) => {
           const slide = document.createElement('div');
           slide.className = 'wrapped-slide';
+
+          // Year label in background
+          if (WRAPPED_YEARS[i]) {
+            const yearLabel = document.createElement('div');
+            yearLabel.className = 'year-label';
+            yearLabel.textContent = WRAPPED_YEARS[i];
+            slide.appendChild(yearLabel);
+          }
+
+          // Image wrapper for Ken Burns overflow clip
+          const imgWrapper = document.createElement('div');
+          imgWrapper.className = 'img-wrapper';
           const img = document.createElement('img');
           img.src = photo;
           img.alt = `Photo of Kriya ${i + 1}`;
+          imgWrapper.appendChild(img);
+
           const caption = document.createElement('div');
           caption.className = 'caption';
           caption.textContent = WRAPPED_CAPTIONS[i];
           const subcaption = document.createElement('div');
           subcaption.className = 'subcaption';
           subcaption.textContent = `${i + 1} of ${WRAPPED_PHOTOS.length}`;
-          slide.appendChild(img);
+          slide.appendChild(imgWrapper);
           slide.appendChild(caption);
           slide.appendChild(subcaption);
           overlay.appendChild(slide);
           return slide;
         });
 
-        // Final slide
+        // Final slide - much more impactful
         const finalSlide = document.createElement('div');
         finalSlide.className = 'wrapped-slide';
         finalSlide.innerHTML = `
-          <div style="font-size:5rem;margin-bottom:1rem;filter:drop-shadow(0 0 20px rgba(255,107,157,0.5));">💗</div>
-          <div style="color:#fff;font-size:2.2rem;font-weight:700;text-align:center;line-height:1.4;">
-            Happy Valentine's Day, Kriya 💗
+          <div class="final-heart">💗</div>
+          <div class="final-title">
+            Happy Valentine's Day, Kriya
           </div>
-          <div style="color:rgba(255,255,255,0.6);font-size:1.1rem;margin-top:1rem;font-style:italic;">you were always this pretty, Kriya 🥹</div>
-          <div style="color:rgba(255,255,255,0.35);font-size:0.85rem;margin-top:1.5rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;">— yours, always 💌</div>
+          <div class="final-subtitle">you were always the prettiest person in every room 🥹</div>
+          <div class="final-sign-off">— yours, always 💌</div>
         `;
+        // Add floating hearts to final slide
+        const heartEmojis = ['💗', '💕', '🩷', '💜', '🌸'];
+        for (let i = 0; i < 12; i++) {
+          const fh = document.createElement('div');
+          fh.className = 'final-floating-heart';
+          fh.textContent = heartEmojis[i % heartEmojis.length];
+          fh.style.left = (10 + Math.random() * 80) + '%';
+          fh.style.top = (20 + Math.random() * 60) + '%';
+          fh.style.animationDelay = (Math.random() * 4) + 's';
+          fh.style.animationDuration = (3 + Math.random() * 3) + 's';
+          fh.style.fontSize = (0.8 + Math.random() * 1) + 'rem';
+          finalSlide.appendChild(fh);
+        }
         overlay.appendChild(finalSlide);
         slides.push(finalSlide);
 
@@ -521,35 +680,61 @@
         requestAnimationFrame(() => overlay.classList.add('active'));
 
         let current = 0;
+        let autoTimer = null;
 
         function showSlide(index) {
+          // Clear any pending auto-advance
+          if (autoTimer) { clearTimeout(autoTimer); autoTimer = null; }
+
+          // Reset all slides
           slides.forEach(s => s.classList.remove('show'));
           slides[index].classList.add('show');
           bg.style.background = WRAPPED_GRADIENTS[index % WRAPPED_GRADIENTS.length];
 
           // Update progress segments
           segments.forEach((s, i) => {
-            if (i < index) { s.seg.classList.add('done'); s.fill.style.width = '100%'; }
-            else if (i === index) { s.seg.classList.remove('done'); s.fill.style.width = '0%'; }
-            else { s.seg.classList.remove('done'); s.fill.style.width = '0%'; }
+            s.seg.classList.remove('filling');
+            if (i < index) {
+              s.seg.classList.add('done');
+              s.fill.style.width = '100%';
+            } else {
+              s.seg.classList.remove('done');
+              s.fill.style.width = '0%';
+            }
           });
 
+          // Animate current segment fill over SLIDE_DURATION
+          requestAnimationFrame(() => {
+            const currentSeg = segments[index];
+            currentSeg.fill.style.transitionDuration = (SLIDE_DURATION / 1000) + 's';
+            currentSeg.seg.classList.add('filling');
+          });
+
+          // Heart confetti on each slide
           const heart = confetti.shapeFromPath({
             path: 'M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z',
           });
           confetti({ particleCount: 15, spread: 360, gravity: 0, decay: 0.95, startVelocity: 12, shapes: [heart], colors: ['#ff6b9d', '#c084fc', '#fb7185', '#a78bfa'], scalar: 2 });
 
-          // Fill current segment immediately
-          segments[index].fill.style.width = '100%';
-
           if (index === slides.length - 1) {
-            tapHint.textContent = '';
-            // Big finale confetti
+            tapHint.style.display = 'none';
+            // Big finale confetti burst
             setTimeout(() => {
               confetti({ particleCount: 80, spread: 360, gravity: 0, decay: 0.94, startVelocity: 25, shapes: [heart], colors: ['#ff6b9d', '#c084fc', '#fb7185', '#a78bfa', '#f9a8d4'], scalar: 3 });
             }, 300);
+            setTimeout(() => {
+              confetti({ particleCount: 40, spread: 360, gravity: 0, decay: 0.94, startVelocity: 18, shapes: [heart], colors: ['#ff6b9d', '#c084fc', '#fb7185'], scalar: 2.5 });
+            }, 800);
             return;
           }
+
+          // Auto-advance after SLIDE_DURATION
+          autoTimer = setTimeout(() => {
+            if (current < slides.length - 1) {
+              current++;
+              showSlide(current);
+            }
+          }, SLIDE_DURATION);
         }
 
         function nextSlide() {
