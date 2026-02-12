@@ -800,7 +800,7 @@
       let buttonWidth = 100;
       let fontSize = 20;
 
-      // ---- NO BUTTON DODGE (uses transform, stays in place, with cooldown) ----
+      // ---- NO BUTTON DODGE (viewport-aware, works on phone) ----
       let dodgeCount = 0;
       let offsetX = 0;
       let offsetY = 0;
@@ -811,20 +811,37 @@
         dodgeCooldown = true;
         setTimeout(() => { dodgeCooldown = false; }, 300);
 
-        // Pick a random nudge direction
+        // Viewport-aware bounds so button never leaves screen
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        const rect = noButton.getBoundingClientRect();
+        const btnW = rect.width;
+        const btnH = rect.height;
+        // Original position (without transform)
+        const origLeft = rect.left - offsetX;
+        const origTop = rect.top - offsetY;
+        // Max offset so button stays 10px inside viewport
+        const maxLeft = -(origLeft - 10);
+        const maxRight = vw - origLeft - btnW - 10;
+        const maxUp = -(origTop - 10);
+        const maxDown = vh - origTop - btnH - 10;
+
+        // Smaller nudge for small screens
+        const step = vw < 500 ? 80 : 150;
+        const stepY = vw < 500 ? 60 : 100;
         const directions = [
-          { x: 150, y: 0 }, { x: -150, y: 0 },
-          { x: 0, y: 100 }, { x: 0, y: -100 },
-          { x: 100, y: -80 }, { x: -100, y: -80 },
-          { x: 100, y: 80 }, { x: -100, y: 80 },
+          { x: step, y: 0 }, { x: -step, y: 0 },
+          { x: 0, y: stepY }, { x: 0, y: -stepY },
+          { x: step * 0.7, y: -stepY * 0.7 }, { x: -step * 0.7, y: -stepY * 0.7 },
+          { x: step * 0.7, y: stepY * 0.7 }, { x: -step * 0.7, y: stepY * 0.7 },
         ];
         const dir = directions[Math.floor(Math.random() * directions.length)];
         offsetX += dir.x;
         offsetY += dir.y;
 
-        // Keep within reasonable bounds from original spot
-        offsetX = Math.max(-300, Math.min(300, offsetX));
-        offsetY = Math.max(-250, Math.min(250, offsetY));
+        // Clamp to viewport bounds
+        offsetX = Math.max(maxLeft, Math.min(maxRight, offsetX));
+        offsetY = Math.max(maxUp, Math.min(maxDown, offsetY));
 
         noButton.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
 
@@ -849,11 +866,23 @@
       // Desktop: dodge on hover
       noButton.addEventListener('mouseenter', dodgeNoButton);
 
-      // Mobile: intercept touch and dodge instead of clicking
+      // Mobile: intercept ALL touch + click events so No can never be pressed
       noButton.addEventListener('touchstart', (e) => {
         e.preventDefault();
+        e.stopPropagation();
         dodgeNoButton();
       }, { passive: false });
+
+      noButton.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      }, { passive: false });
+
+      noButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dodgeNoButton();
+      });
 
       // ---- YES → WRAPPED ----
       yesButton.addEventListener('click', () => {
