@@ -386,24 +386,42 @@
       let buttonWidth = 100;
       let fontSize = 20;
 
-      // ---- NO BUTTON DODGE ----
+      // ---- NO BUTTON DODGE (nudge away from cursor) ----
       let dodgeCount = 0;
+      const DODGE_DISTANCE = 120;
 
       noButton.addEventListener('mouseenter', (e) => {
-        // Keep within visible screen with safe margins
-        const btnW = noButton.offsetWidth;
-        const btnH = noButton.offsetHeight;
-        const safeX = 80;
-        const safeY = 80;
-        const areaW = window.innerWidth - btnW - safeX * 2;
-        const areaH = window.innerHeight - btnH - safeY * 2;
-        const newX = safeX + Math.floor(Math.random() * Math.max(areaW, 100));
-        const newY = safeY + Math.floor(Math.random() * Math.max(areaH, 100));
+        const rect = noButton.getBoundingClientRect();
+        const btnCenterX = rect.left + rect.width / 2;
+        const btnCenterY = rect.top + rect.height / 2;
+
+        // Direction away from cursor
+        let dx = btnCenterX - e.clientX;
+        let dy = btnCenterY - e.clientY;
+        const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+        dx = (dx / dist) * DODGE_DISTANCE;
+        dy = (dy / dist) * DODGE_DISTANCE;
+
+        // New position
+        let newLeft = rect.left + dx;
+        let newTop = rect.top + dy;
+
+        // Clamp within screen
+        const margin = 10;
+        newLeft = Math.max(margin, Math.min(newLeft, window.innerWidth - rect.width - margin));
+        newTop = Math.max(margin, Math.min(newTop, window.innerHeight - rect.height - margin));
+
+        // If clamped to same spot (stuck in corner), nudge opposite direction
+        if (Math.abs(newLeft - rect.left) < 5 && Math.abs(newTop - rect.top) < 5) {
+          newLeft = window.innerWidth / 2 - rect.width / 2;
+          newTop = window.innerHeight / 2 - rect.height / 2;
+        }
 
         noButton.style.position = 'fixed';
-        noButton.style.left = newX + 'px';
-        noButton.style.top = newY + 'px';
+        noButton.style.left = newLeft + 'px';
+        noButton.style.top = newTop + 'px';
         noButton.style.zIndex = '10';
+        noButton.style.transition = 'left 0.15s ease, top 0.15s ease';
 
         // Change Hello Kitty image on each dodge
         dodgeCount++;
