@@ -387,30 +387,40 @@
       let fontSize = 20;
 
       // ---- NO BUTTON DODGE ----
-      noButton.addEventListener('mouseover', () => {
-        const padding = 60;
-        const maxX = window.innerWidth - noButton.offsetWidth - padding;
-        const maxY = window.innerHeight - noButton.offsetHeight - padding;
-        const randX = padding + Math.floor(Math.random() * (maxX - padding));
-        const randY = padding + Math.floor(Math.random() * (maxY - padding));
-        noButton.style.position = 'fixed';
-        noButton.style.left = randX + 'px';
-        noButton.style.top = randY + 'px';
-        noButton.style.zIndex = '10';
-      });
+      let dodgeCount = 0;
 
-      noButton.addEventListener('click', () => {
-        if (noClickCount >= MAX_NO_CLICKS) return;
-        noClickCount++;
-        imageDisplay.src = IMAGE_PATHS[noClickCount];
-        imageDisplay.alt = ALT_TEXTS[noClickCount];
-        buttonHeight += GROWTH_PER_CLICK;
-        buttonWidth += GROWTH_PER_CLICK;
-        fontSize += FONT_GROWTH_PER_CLICK;
-        yesButton.style.height = `${buttonHeight}px`;
-        yesButton.style.width = `${buttonWidth}px`;
-        yesButton.style.fontSize = `${fontSize}px`;
-        noButton.textContent = NO_BUTTON_MESSAGES[noClickCount];
+      noButton.addEventListener('mouseenter', (e) => {
+        // Keep within visible screen with safe margins
+        const btnW = noButton.offsetWidth;
+        const btnH = noButton.offsetHeight;
+        const safeX = 80;
+        const safeY = 80;
+        const areaW = window.innerWidth - btnW - safeX * 2;
+        const areaH = window.innerHeight - btnH - safeY * 2;
+        const newX = safeX + Math.floor(Math.random() * Math.max(areaW, 100));
+        const newY = safeY + Math.floor(Math.random() * Math.max(areaH, 100));
+
+        noButton.style.position = 'fixed';
+        noButton.style.left = newX + 'px';
+        noButton.style.top = newY + 'px';
+        noButton.style.zIndex = '10';
+
+        // Change Hello Kitty image on each dodge
+        dodgeCount++;
+        const imgIndex = Math.min(dodgeCount, IMAGE_PATHS.length - 2);
+        imageDisplay.src = IMAGE_PATHS[imgIndex];
+        imageDisplay.alt = ALT_TEXTS[imgIndex];
+
+        // Grow yes button & update no text
+        if (dodgeCount <= MAX_NO_CLICKS) {
+          buttonHeight += GROWTH_PER_CLICK;
+          buttonWidth += GROWTH_PER_CLICK;
+          fontSize += FONT_GROWTH_PER_CLICK;
+          yesButton.style.height = `${buttonHeight}px`;
+          yesButton.style.width = `${buttonWidth}px`;
+          yesButton.style.fontSize = `${fontSize}px`;
+          noButton.textContent = NO_BUTTON_MESSAGES[Math.min(dodgeCount, NO_BUTTON_MESSAGES.length - 1)];
+        }
       });
 
       // ---- YES → WRAPPED ----
