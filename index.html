@@ -557,8 +557,8 @@
   <link rel="preload" as="image" href="./images/image7.gif">
 </head>
 <body>
-  <!-- Background music -->
-  <audio id="bgMusic" loop preload="auto">
+  <!-- Background music — playsinline for iOS -->
+  <audio id="bgMusic" loop preload="auto" playsinline webkit-playsinline>
     <source src="./Die With A Smile-(SambalpuriStar.In).mp3" type="audio/mpeg">
   </audio>
 
@@ -596,32 +596,46 @@
 
   <script>
     (() => {
-      // ---- BACKGROUND MUSIC (always on, no mute) ----
+      // ---- BACKGROUND MUSIC — iOS-compatible unlock ----
       const bgMusic = document.getElementById('bgMusic');
       bgMusic.volume = 0.5;
+      bgMusic.load(); // kick off buffering early
 
-      let musicStarted = false;
-      function startMusic() {
-        if (musicStarted) return;
+      let musicPlaying = false;
+
+      function tryPlayMusic() {
+        if (musicPlaying) return;
+        // iOS needs currentTime reset before play in a gesture handler
+        bgMusic.currentTime = 0;
         const p = bgMusic.play();
         if (p && p.then) {
-          p.then(() => { musicStarted = true; }).catch(() => {});
+          p.then(() => {
+            musicPlaying = true;
+            removeListeners();
+          }).catch(() => {
+            // iOS sometimes needs a re-load then play on next gesture
+            bgMusic.load();
+          });
         }
       }
 
-      // Mobile browsers need a direct user gesture to unlock audio.
-      // Listen on EVERY interaction until it actually plays.
-      function tryStartMusic() {
-        startMusic();
-        if (musicStarted) {
-          document.removeEventListener('click', tryStartMusic, true);
-          document.removeEventListener('touchstart', tryStartMusic, true);
-          document.removeEventListener('touchend', tryStartMusic, true);
-        }
+      function removeListeners() {
+        ['click', 'touchstart', 'touchend', 'pointerdown'].forEach(evt => {
+          document.removeEventListener(evt, tryPlayMusic, true);
+        });
       }
-      document.addEventListener('click', tryStartMusic, true);
-      document.addEventListener('touchstart', tryStartMusic, true);
-      document.addEventListener('touchend', tryStartMusic, true);
+
+      // Attach on every possible gesture type — iOS is picky
+      ['click', 'touchstart', 'touchend', 'pointerdown'].forEach(evt => {
+        document.addEventListener(evt, tryPlayMusic, true);
+      });
+
+      // Also try on visibility change (e.g. user switches back to tab)
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden && musicPlaying && bgMusic.paused) {
+          bgMusic.play().catch(() => {});
+        }
+      });
 
       // ---- FLOATING EMOJIS ----
       const emojis = ['💗', '✨', '🦋', '💌', '🌸', '💕', '⭐', '🎀', '💜', '🩷'];
