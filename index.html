@@ -395,6 +395,49 @@
       color: #fff;
     }
 
+    /* Hidden YouTube player */
+    #ytPlayer {
+      position: fixed;
+      width: 1px;
+      height: 1px;
+      bottom: 0;
+      left: 0;
+      opacity: 0;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* Music toggle button */
+    .music-toggle {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 70;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: all 0.3s ease;
+    }
+    .music-toggle:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.1);
+    }
+    .music-toggle.playing {
+      animation: musicPulse 1.5s ease infinite;
+    }
+    @keyframes musicPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(255, 107, 157, 0.3); }
+      50% { box-shadow: 0 0 0 10px rgba(255, 107, 157, 0); }
+    }
+
     /* subtext under question */
     .subtext {
       color: rgba(255, 255, 255, 0.4);
@@ -414,6 +457,12 @@
   <link rel="preload" as="image" href="./images/image7.gif">
 </head>
 <body>
+  <!-- Hidden YouTube background music -->
+  <iframe id="ytPlayer" src="https://www.youtube.com/embed/UFy11i_rVI8?enablejsapi=1&autoplay=0&loop=1&playlist=UFy11i_rVI8" allow="autoplay" frameborder="0"></iframe>
+
+  <!-- Music toggle button -->
+  <button class="music-toggle" id="musicToggle" title="Toggle music">🔇</button>
+
   <!-- Floating emoji background -->
   <div id="floaters"></div>
 
@@ -448,6 +497,45 @@
 
   <script>
     (() => {
+      // ---- BACKGROUND MUSIC (YouTube) ----
+      const musicToggle = document.getElementById('musicToggle');
+      const ytPlayer = document.getElementById('ytPlayer');
+      let musicPlaying = false;
+      let playerReady = false;
+
+      // Use YouTube IFrame API
+      window.onYouTubeIframeAPIReady = () => {};
+
+      function startMusic() {
+        if (musicPlaying) return;
+        // Reload iframe with autoplay to start playback
+        ytPlayer.src = 'https://www.youtube.com/embed/UFy11i_rVI8?autoplay=1&loop=1&playlist=UFy11i_rVI8';
+        musicPlaying = true;
+        musicToggle.textContent = '🎵';
+        musicToggle.classList.add('playing');
+      }
+
+      function stopMusic() {
+        ytPlayer.src = 'https://www.youtube.com/embed/UFy11i_rVI8?autoplay=0&loop=1&playlist=UFy11i_rVI8';
+        musicPlaying = false;
+        musicToggle.textContent = '🔇';
+        musicToggle.classList.remove('playing');
+      }
+
+      musicToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (musicPlaying) { stopMusic(); } else { startMusic(); }
+      });
+
+      // Start music on first interaction anywhere on page
+      function onFirstInteraction() {
+        startMusic();
+        document.removeEventListener('click', onFirstInteraction);
+        document.removeEventListener('touchstart', onFirstInteraction);
+      }
+      document.addEventListener('click', onFirstInteraction);
+      document.addEventListener('touchstart', onFirstInteraction);
+
       // ---- FLOATING EMOJIS ----
       const emojis = ['💗', '✨', '🦋', '💌', '🌸', '💕', '⭐', '🎀', '💜', '🩷'];
       const floaterContainer = document.getElementById('floaters');
