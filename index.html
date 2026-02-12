@@ -4,33 +4,244 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="A cute Valentine's Day page to ask someone to be your Valentine!">
-  <meta name="theme-color" content="#ffd0e5">
-  <title>Valentine's Day</title>
+  <meta name="theme-color" content="#1a0a2e">
+  <title>for kriya 💌</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    .gradient-background {
-      background: linear-gradient(180deg, #ffd0e5 0%, #ffe8f2 36%, #ffffff 100%);
+    * { font-family: 'Quicksand', sans-serif; }
+
+    body {
+      margin: 0;
       min-height: 100vh;
+      background: linear-gradient(135deg, #1a0a2e 0%, #2d1b69 25%, #44107a 50%, #893168 75%, #ff6b9d 100%);
+      background-size: 400% 400%;
+      animation: gradientShift 8s ease infinite;
+      overflow: hidden;
     }
 
-    .bounce {
-      animation: bounce 2s ease infinite;
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Floating emojis */
+    .floater {
+      position: fixed;
+      font-size: 1.5rem;
+      opacity: 0.3;
+      pointer-events: none;
+      animation: floatUp linear infinite;
+      z-index: 0;
+    }
+    @keyframes floatUp {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.3; }
+      90% { opacity: 0.3; }
+      100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* Glass card */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 24px;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 0 80px rgba(255, 105, 180, 0.05);
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Image glow */
+    #imageDisplay {
+      border-radius: 20px;
+      border: 3px solid rgba(255, 105, 180, 0.4);
+      box-shadow: 0 0 30px rgba(255, 105, 180, 0.3), 0 0 60px rgba(147, 51, 234, 0.15);
+      transition: transform 0.3s ease;
+    }
+    #imageDisplay:hover { transform: scale(1.02); }
+
+    /* Gradient text */
+    .gradient-text {
+      background: linear-gradient(135deg, #ff6b9d, #c084fc, #ff6b9d, #fb7185);
+      background-size: 300% 300%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: textShimmer 3s ease infinite;
+    }
+    @keyframes textShimmer {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Yes button - pill shaped, glowy */
+    #yesButton {
+      background: linear-gradient(135deg, #ff6b9d, #c084fc);
+      border: none;
+      border-radius: 50px;
+      color: white;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      box-shadow: 0 0 20px rgba(255, 107, 157, 0.4), 0 0 40px rgba(192, 132, 252, 0.2);
+      animation: yesGlow 2s ease infinite, bounce 2s ease infinite;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    #yesButton:hover {
+      box-shadow: 0 0 30px rgba(255, 107, 157, 0.6), 0 0 60px rgba(192, 132, 252, 0.4);
+      transform: scale(1.05);
+    }
+    @keyframes yesGlow {
+      0%, 100% { box-shadow: 0 0 20px rgba(255, 107, 157, 0.4), 0 0 40px rgba(192, 132, 252, 0.2); }
+      50% { box-shadow: 0 0 30px rgba(255, 107, 157, 0.6), 0 0 60px rgba(192, 132, 252, 0.4); }
     }
 
     @keyframes bounce {
-      0%, 20%, 50%, 80%, 100% {
-        transform: translateY(0);
-      }
-      40% {
-        transform: translateY(-20px);
-      }
-      60% {
-        transform: translateY(-10px);
-      }
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-12px); }
+      60% { transform: translateY(-6px); }
+    }
+
+    /* No button - smol, slay-proof */
+    #noButton {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50px;
+      color: rgba(255, 255, 255, 0.7);
+      font-weight: 600;
+      cursor: pointer;
+      transition: none;
+      position: relative;
+    }
+
+    /* Sparkle cursor trail */
+    .sparkle {
+      position: fixed;
+      pointer-events: none;
+      font-size: 1rem;
+      z-index: 99;
+      animation: sparkleOut 0.8s ease forwards;
+    }
+    @keyframes sparkleOut {
+      0% { transform: scale(1) rotate(0deg); opacity: 1; }
+      100% { transform: scale(0) rotate(180deg) translateY(-30px); opacity: 0; }
+    }
+
+    /* Wrapped slideshow */
+    .wrapped-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.6s;
+    }
+    .wrapped-overlay.active { opacity: 1; }
+
+    .wrapped-bg {
+      position: absolute;
+      inset: 0;
+      transition: background 0.8s ease;
+    }
+
+    .wrapped-slide {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transform: scale(0.8) rotate(-2deg);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+      padding: 2rem;
+      z-index: 1;
+    }
+    .wrapped-slide.show {
+      opacity: 1;
+      transform: scale(1) rotate(0deg);
+    }
+    .wrapped-slide img {
+      max-height: 55vh;
+      max-width: 80vw;
+      object-fit: contain;
+      border-radius: 24px;
+      border: 3px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+    .wrapped-slide .caption {
+      color: #fff;
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-top: 1.5rem;
+      text-align: center;
+      text-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
+      letter-spacing: 0.3px;
+    }
+    .wrapped-slide .subcaption {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+      font-weight: 500;
+    }
+
+    .wrapped-progress-container {
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      right: 1rem;
+      display: flex;
+      gap: 4px;
+      z-index: 60;
+    }
+    .wrapped-progress-segment {
+      flex: 1;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .wrapped-progress-fill {
+      height: 100%;
+      background: #fff;
+      width: 0%;
+      border-radius: 2px;
+      transition: width 0.1s linear;
+    }
+    .wrapped-progress-segment.done .wrapped-progress-fill { width: 100%; }
+
+    .wrapped-tap-hint {
+      position: fixed;
+      bottom: 2rem;
+      color: rgba(255, 255, 255, 0.35);
+      font-size: 0.85rem;
+      font-weight: 600;
+      z-index: 60;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    /* subtext under question */
+    .subtext {
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 2px;
+      text-transform: uppercase;
     }
   </style>
-  <!-- Preload images so transitions feel instant -->
+  <!-- Preload images -->
   <link rel="preload" as="image" href="./images/image1.gif">
   <link rel="preload" as="image" href="./images/image2.gif">
   <link rel="preload" as="image" href="./images/image3.gif">
@@ -39,28 +250,32 @@
   <link rel="preload" as="image" href="./images/image6.gif">
   <link rel="preload" as="image" href="./images/image7.gif">
 </head>
-<body class="gradient-background">
-  <main class="flex items-center justify-center h-screen">
-    <section class="flex flex-col items-center p-4">
+<body>
+  <!-- Floating emoji background -->
+  <div id="floaters"></div>
+
+  <main class="flex items-center justify-center h-screen relative z-10">
+    <section class="glass-card flex flex-col items-center max-w-md mx-4">
       <img
         id="imageDisplay"
         src="./images/image1.gif"
-        alt="Cute kitten with flowers"
-        class="rounded-md h-[300px] object-cover"
+        alt="Hello Kitty with hearts"
+        class="h-[260px] object-cover"
       />
-      <h1 id="valentineQuestion" class="text-4xl font-bold italic text-[#bd1e59] my-4">
-        Will you be my Valentine?
+      <p class="subtext mt-4 mb-1">✨ for the prettiest girl i know ✨</p>
+      <h1 id="valentineQuestion" class="text-3xl font-bold gradient-text text-center my-2 leading-snug">
+        Kriya, will you be my Valentine?
       </h1>
-      <div id="responseButtons" class="flex gap-4 pt-5 items-center">
+      <div id="responseButtons" class="flex gap-5 pt-6 items-center">
         <button
           id="yesButton"
-          class="bounce inline-flex items-center justify-center whitespace-nowrap rounded-md text-xl font-medium cursor-pointer px-4 py-2 bg-green-500 text-white transition-all duration-300 ease-in-out hover:bg-green-400 min-h-12 min-w-[75px]"
+          class="text-xl px-8 py-3 min-w-[100px]"
         >
-          Yes
+          yes pls 💗
         </button>
         <button
           id="noButton"
-          class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-xl font-medium cursor-pointer px-4 py-2 bg-red-500 text-white transition-colors hover:bg-red-700 h-12 min-w-[75px]"
+          class="text-base px-5 py-2 min-w-[70px]"
         >
           No
         </button>
@@ -70,14 +285,44 @@
 
   <script>
     (() => {
-      // DOM references
+      // ---- FLOATING EMOJIS ----
+      const emojis = ['💗', '✨', '🦋', '💌', '🌸', '💕', '⭐', '🎀', '💜', '🩷'];
+      const floaterContainer = document.getElementById('floaters');
+      function spawnFloater() {
+        const el = document.createElement('div');
+        el.className = 'floater';
+        el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        el.style.left = Math.random() * 100 + 'vw';
+        el.style.animationDuration = (8 + Math.random() * 12) + 's';
+        el.style.fontSize = (1 + Math.random() * 1.5) + 'rem';
+        floaterContainer.appendChild(el);
+        el.addEventListener('animationend', () => el.remove());
+      }
+      // Spawn initial batch
+      for (let i = 0; i < 15; i++) setTimeout(spawnFloater, i * 300);
+      setInterval(spawnFloater, 800);
+
+      // ---- SPARKLE CURSOR ----
+      let lastSparkle = 0;
+      document.addEventListener('mousemove', (e) => {
+        if (Date.now() - lastSparkle < 100) return;
+        lastSparkle = Date.now();
+        const sparkle = document.createElement('div');
+        sparkle.className = 'sparkle';
+        sparkle.textContent = ['✨', '💗', '⭐', '🩷'][Math.floor(Math.random() * 4)];
+        sparkle.style.left = e.clientX + 'px';
+        sparkle.style.top = e.clientY + 'px';
+        document.body.appendChild(sparkle);
+        sparkle.addEventListener('animationend', () => sparkle.remove());
+      });
+
+      // ---- DOM REFS ----
       const yesButton = document.getElementById('yesButton');
       const noButton = document.getElementById('noButton');
       const imageDisplay = document.getElementById('imageDisplay');
       const valentineQuestion = document.getElementById('valentineQuestion');
       const responseButtons = document.getElementById('responseButtons');
 
-      // Configuration
       const GROWTH_PER_CLICK = 35;
       const FONT_GROWTH_PER_CLICK = 25;
       const MAX_NO_CLICKS = 5;
@@ -94,68 +339,229 @@
 
       const NO_BUTTON_MESSAGES = [
         'No',
-        'Are you sure?',
+        'Kriya are you sure? 🥺',
         'Pookie please',
-        "Don't do this to me :(",
-        "You're breaking my heart",
-        "I'm gonna cry...",
+        "Kriya don't do this to me :(",
+        "You're breaking my heart 💔",
+        "I'm gonna cry Kriya...",
       ];
 
       const ALT_TEXTS = [
-        'Cute kitten with flowers',
-        'Sad kitten looking up',
-        'Kitten begging',
-        'Heartbroken kitten',
-        'Crying kitten',
-        'Devastated kitten',
-        'Happy kitten celebrating',
+        'Hello Kitty with hearts',
+        'Hello Kitty saying pretty please',
+        'Hello Kitty begging with hearts',
+        'Sad Hello Kitty with falling stars',
+        'Hello Kitty crying',
+        'Hello Kitty shedding tears',
+        'Hello Kitty celebrating yay',
       ];
 
-      // State
+      const WRAPPED_PHOTOS = [
+        './images/WhatsApp Image 2026-02-13 at 02.20.43.jpeg',
+        './images/WhatsApp Image 2026-02-13 at 02.20.43 (1).jpeg',
+        './images/WhatsApp Image 2026-02-13 at 02.20.44.jpeg',
+        './images/WhatsApp Image 2026-02-13 at 02.21.46.jpeg',
+        './images/WhatsApp Image 2026-02-13 at 02.24.16.jpeg',
+      ];
+
+      const WRAPPED_CAPTIONS = [
+        "cute since day one, no debate 💗",
+        "giving main character energy since forever 🫠",
+        "that smile with the mountains behind you? unreal 🌸",
+        "you + boat rides + that grin = my whole heart 🦋",
+        "and then you grew up and chose violence 💕",
+      ];
+
+      const WRAPPED_GRADIENTS = [
+        'linear-gradient(135deg, #1a0a2e, #44107a, #ff6b9d)',
+        'linear-gradient(135deg, #0f172a, #1e3a5f, #7dd3fc)',
+        'linear-gradient(135deg, #1a0a2e, #7c3aed, #c084fc)',
+        'linear-gradient(135deg, #0a1628, #155e75, #2dd4bf)',
+        'linear-gradient(135deg, #2d0a1e, #be185d, #fb7185)',
+        'linear-gradient(135deg, #1a0a2e, #9333ea, #ff6b9d)',
+      ];
+
       let noClickCount = 0;
       let buttonHeight = 48;
-      let buttonWidth = 80;
+      let buttonWidth = 100;
       let fontSize = 20;
+
+      // ---- NO BUTTON DODGE ----
+      noButton.addEventListener('mouseover', () => {
+        const maxX = window.innerWidth - noButton.offsetWidth - 20;
+        const maxY = window.innerHeight - noButton.offsetHeight - 20;
+        const randX = Math.floor(Math.random() * maxX);
+        const randY = Math.floor(Math.random() * maxY);
+        noButton.style.position = 'fixed';
+        noButton.style.left = randX + 'px';
+        noButton.style.top = randY + 'px';
+        noButton.style.zIndex = '10';
+      });
 
       noButton.addEventListener('click', () => {
         if (noClickCount >= MAX_NO_CLICKS) return;
-
         noClickCount++;
-
-        // Update image and alt text
         imageDisplay.src = IMAGE_PATHS[noClickCount];
         imageDisplay.alt = ALT_TEXTS[noClickCount];
-
-        // Grow the "Yes" button to make it harder to ignore
         buttonHeight += GROWTH_PER_CLICK;
         buttonWidth += GROWTH_PER_CLICK;
         fontSize += FONT_GROWTH_PER_CLICK;
-
         yesButton.style.height = `${buttonHeight}px`;
         yesButton.style.width = `${buttonWidth}px`;
         yesButton.style.fontSize = `${fontSize}px`;
-
-        // Update "No" button text with increasingly desperate messages
         noButton.textContent = NO_BUTTON_MESSAGES[noClickCount];
       });
 
+      // ---- YES → WRAPPED ----
       yesButton.addEventListener('click', () => {
         imageDisplay.src = IMAGE_PATHS[IMAGE_PATHS.length - 1];
         imageDisplay.alt = ALT_TEXTS[ALT_TEXTS.length - 1];
-        valentineQuestion.textContent = 'Yayyy!! :3';
+        valentineQuestion.innerHTML = 'YAAYYY KRIYA!! 🎉';
+        const sub = document.querySelector('.subtext');
+        if (sub) sub.textContent = "i knew you'd say yes 🥹";
         responseButtons.style.display = 'none';
 
-        // Heart-shaped confetti for a valentine theme
         const heart = confetti.shapeFromPath({
           path: 'M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z',
         });
-
-        const defaults = { spread: 360, ticks: 100, gravity: 0, decay: 0.94, startVelocity: 20, shapes: [heart], colors: ['#ff69b4', '#ff1493', '#ff6b81', '#e84393'] };
-
+        const defaults = { spread: 360, ticks: 100, gravity: 0, decay: 0.94, startVelocity: 20, shapes: [heart], colors: ['#ff6b9d', '#c084fc', '#fb7185', '#a78bfa', '#f9a8d4'] };
         confetti({ ...defaults, particleCount: 50, scalar: 2 });
         confetti({ ...defaults, particleCount: 25, scalar: 3 });
         confetti({ ...defaults, particleCount: 10, scalar: 4 });
+
+        setTimeout(startWrapped, 2000);
       });
+
+      // ---- SPOTIFY WRAPPED SLIDESHOW ----
+      function startWrapped() {
+        const overlay = document.createElement('div');
+        overlay.className = 'wrapped-overlay';
+
+        const bg = document.createElement('div');
+        bg.className = 'wrapped-bg';
+        overlay.appendChild(bg);
+
+        // Story-style segmented progress bar
+        const progressContainer = document.createElement('div');
+        progressContainer.className = 'wrapped-progress-container';
+        const totalSlides = WRAPPED_PHOTOS.length + 1;
+        const segments = [];
+        for (let i = 0; i < totalSlides; i++) {
+          const seg = document.createElement('div');
+          seg.className = 'wrapped-progress-segment';
+          const fill = document.createElement('div');
+          fill.className = 'wrapped-progress-fill';
+          seg.appendChild(fill);
+          progressContainer.appendChild(seg);
+          segments.push({ seg, fill });
+        }
+
+        const tapHint = document.createElement('div');
+        tapHint.className = 'wrapped-tap-hint';
+        tapHint.textContent = 'tap to continue →';
+
+        overlay.appendChild(progressContainer);
+        overlay.appendChild(tapHint);
+
+        // Create photo slides
+        const slides = WRAPPED_PHOTOS.map((photo, i) => {
+          const slide = document.createElement('div');
+          slide.className = 'wrapped-slide';
+          const img = document.createElement('img');
+          img.src = photo;
+          img.alt = `Photo of Kriya ${i + 1}`;
+          const caption = document.createElement('div');
+          caption.className = 'caption';
+          caption.textContent = WRAPPED_CAPTIONS[i];
+          const subcaption = document.createElement('div');
+          subcaption.className = 'subcaption';
+          subcaption.textContent = `${i + 1} of ${WRAPPED_PHOTOS.length}`;
+          slide.appendChild(img);
+          slide.appendChild(caption);
+          slide.appendChild(subcaption);
+          overlay.appendChild(slide);
+          return slide;
+        });
+
+        // Final slide
+        const finalSlide = document.createElement('div');
+        finalSlide.className = 'wrapped-slide';
+        finalSlide.innerHTML = `
+          <div style="font-size:5rem;margin-bottom:1rem;filter:drop-shadow(0 0 20px rgba(255,107,157,0.5));">💗</div>
+          <div style="color:#fff;font-size:2.2rem;font-weight:700;text-align:center;line-height:1.4;">
+            Happy Valentine's Day, Kriya 💗
+          </div>
+          <div style="color:rgba(255,255,255,0.6);font-size:1.1rem;margin-top:1rem;font-style:italic;">you were always this pretty, Kriya 🥹</div>
+          <div style="color:rgba(255,255,255,0.35);font-size:0.85rem;margin-top:1.5rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;">— yours, always 💌</div>
+        `;
+        overlay.appendChild(finalSlide);
+        slides.push(finalSlide);
+
+        document.body.appendChild(overlay);
+        requestAnimationFrame(() => overlay.classList.add('active'));
+
+        let current = 0;
+        const SLIDE_DURATION = 3500;
+        let timer = null;
+        let progressStart = null;
+        let progressRAF = null;
+
+        function showSlide(index) {
+          slides.forEach(s => s.classList.remove('show'));
+          slides[index].classList.add('show');
+          bg.style.background = WRAPPED_GRADIENTS[index % WRAPPED_GRADIENTS.length];
+
+          // Update progress segments
+          segments.forEach((s, i) => {
+            if (i < index) { s.seg.classList.add('done'); s.fill.style.width = '100%'; }
+            else if (i === index) { s.seg.classList.remove('done'); s.fill.style.width = '0%'; }
+            else { s.seg.classList.remove('done'); s.fill.style.width = '0%'; }
+          });
+
+          const heart = confetti.shapeFromPath({
+            path: 'M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z',
+          });
+          confetti({ particleCount: 15, spread: 360, gravity: 0, decay: 0.95, startVelocity: 12, shapes: [heart], colors: ['#ff6b9d', '#c084fc', '#fb7185', '#a78bfa'], scalar: 2 });
+
+          if (index === slides.length - 1) {
+            tapHint.textContent = '';
+            segments[index].fill.style.width = '100%';
+            cancelAnimationFrame(progressRAF);
+            // Big finale confetti
+            setTimeout(() => {
+              confetti({ particleCount: 80, spread: 360, gravity: 0, decay: 0.94, startVelocity: 25, shapes: [heart], colors: ['#ff6b9d', '#c084fc', '#fb7185', '#a78bfa', '#f9a8d4'], scalar: 3 });
+            }, 300);
+            return;
+          }
+
+          progressStart = Date.now();
+          function animateProgress() {
+            const elapsed = Date.now() - progressStart;
+            const pct = Math.min((elapsed / SLIDE_DURATION) * 100, 100);
+            segments[index].fill.style.width = pct + '%';
+            if (pct < 100) progressRAF = requestAnimationFrame(animateProgress);
+          }
+          progressRAF = requestAnimationFrame(animateProgress);
+
+          clearTimeout(timer);
+          timer = setTimeout(nextSlide, SLIDE_DURATION);
+        }
+
+        function nextSlide() {
+          if (current < slides.length - 1) {
+            current++;
+            showSlide(current);
+          }
+        }
+
+        overlay.addEventListener('click', () => {
+          clearTimeout(timer);
+          cancelAnimationFrame(progressRAF);
+          nextSlide();
+        });
+
+        setTimeout(() => showSlide(0), 100);
+      }
     })();
   </script>
 </body>
