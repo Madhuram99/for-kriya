@@ -155,7 +155,7 @@
       transition: background 1.2s ease;
     }
 
-    /* ====== GHIBLI SCENE SYSTEM ====== */
+    /* ====== RISING STARS + VIGNETTE ====== */
     .ghibli-scene {
       position: absolute;
       inset: 0;
@@ -164,129 +164,20 @@
       z-index: 0;
     }
 
-    /* Fluffy cumulus clouds — shape built from base + bumps */
-    .ghibli-cloud {
-      position: absolute;
-      background: #fff;
-      border-radius: 100px;
-      opacity: 0;
-    }
-    .ghibli-cloud::before,
-    .ghibli-cloud::after {
-      content: '';
-      position: absolute;
-      background: inherit;
-      border-radius: 50%;
-    }
-    .ghibli-cloud::before {
-      width: 55%;
-      height: 130%;
-      top: -40%;
-      left: 15%;
-    }
-    .ghibli-cloud::after {
-      width: 45%;
-      height: 160%;
-      top: -60%;
-      right: 15%;
-    }
-
-    /* Cloud layers — near, mid, far for parallax depth */
-    .cloud-near {
-      animation: cloudDriftNear 20s linear infinite;
-      opacity: 0.9;
-    }
-    .cloud-mid {
-      animation: cloudDriftMid 30s linear infinite;
-      opacity: 0.6;
-    }
-    .cloud-far {
-      animation: cloudDriftFar 45s linear infinite;
-      opacity: 0.35;
-    }
-    @keyframes cloudDriftNear {
-      0%   { transform: translateX(110vw); }
-      100% { transform: translateX(-300px); }
-    }
-    @keyframes cloudDriftMid {
-      0%   { transform: translateX(110vw) scale(0.6); }
-      100% { transform: translateX(-200px) scale(0.6); }
-    }
-    @keyframes cloudDriftFar {
-      0%   { transform: translateX(110vw) scale(0.35); }
-      100% { transform: translateX(-150px) scale(0.35); }
-    }
-
-    /* Rolling hills silhouette at bottom */
-    .ghibli-hills {
-      position: absolute;
-      bottom: 0;
-      left: -10%;
-      width: 120%;
-      height: 35%;
-      pointer-events: none;
-    }
-
-    /* Twinkling stars */
-    .ghibli-star {
-      position: absolute;
-      border-radius: 50%;
-      background: #fffaf0;
-      opacity: 0;
-      animation: starTwinkle 3s ease-in-out infinite;
-    }
-    @keyframes starTwinkle {
-      0%, 100% { opacity: 0.15; transform: scale(0.8); }
-      50% { opacity: 0.95; transform: scale(1.3); }
-    }
-
-    /* Fireflies — warm glowing orbs */
-    .ghibli-firefly {
+    /* Rising star-sparkles from the ground */
+    .rising-star {
       position: absolute;
       border-radius: 50%;
       opacity: 0;
-      animation: fireflyGlow var(--fly-dur, 6s) ease-in-out infinite;
-      animation-delay: var(--fly-delay, 0s);
+      animation: starRise var(--star-dur, 5s) ease-out infinite;
+      animation-delay: var(--star-delay, 0s);
     }
-    @keyframes fireflyGlow {
-      0%   { transform: translate(0, 0) scale(0.4); opacity: 0; }
-      20%  { opacity: 0.9; }
-      50%  { transform: translate(var(--fx), var(--fy)) scale(1); opacity: 0.5; }
-      80%  { opacity: 0.9; }
-      100% { transform: translate(var(--fx2), var(--fy2)) scale(0.4); opacity: 0; }
-    }
-
-    /* Floating dust motes / pollen for sunset scenes */
-    .ghibli-mote {
-      position: absolute;
-      border-radius: 50%;
-      opacity: 0;
-      animation: moteFloat var(--mote-dur, 8s) ease-in-out infinite;
-      animation-delay: var(--mote-delay, 0s);
-    }
-    @keyframes moteFloat {
-      0%   { transform: translateY(0) scale(0.6); opacity: 0; }
-      25%  { opacity: 0.5; }
-      50%  { transform: translateY(var(--mote-y)) translateX(var(--mote-x)) scale(1); }
-      75%  { opacity: 0.5; }
-      100% { transform: translateY(calc(var(--mote-y) * 2)) translateX(calc(var(--mote-x) * 1.5)) scale(0.6); opacity: 0; }
-    }
-
-    /* Magical sparkles for final slide */
-    .ghibli-sparkle {
-      position: absolute;
-      width: 4px;
-      height: 4px;
-      border-radius: 50%;
-      opacity: 0;
-      animation: sparkleRise var(--sp-dur, 5s) ease-out infinite;
-      animation-delay: var(--sp-delay, 0s);
-    }
-    @keyframes sparkleRise {
+    @keyframes starRise {
       0%   { transform: translateY(0) scale(0); opacity: 0; }
-      10%  { transform: translateY(-10px) scale(1); opacity: 1; }
-      50%  { opacity: 0.6; }
-      100% { transform: translateY(-120px) scale(0.3); opacity: 0; }
+      8%   { transform: translateY(-15px) scale(1); opacity: 1; }
+      40%  { opacity: 0.7; }
+      70%  { opacity: 0.4; }
+      100% { transform: translateY(-180px) scale(0.2); opacity: 0; }
     }
 
     /* Soft vignette overlay */
@@ -295,7 +186,7 @@
       inset: 0;
       pointer-events: none;
       z-index: 0;
-      background: radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,0.35) 100%);
+      background: radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,0.3) 100%);
     }
 
     .wrapped-slide {
@@ -722,40 +613,37 @@
         "those kajal eyes & that smile? nobody stood a chance 🫠",
       ];
 
-      // Ghibli scene definitions — each slide is a full scene
-      const GHIBLI_SCENES = [
+      // Slide backgrounds + rising star colors
+      const SLIDE_SCENES = [
         {
-          // Slide 1: Spirited Away sunset sky — warm, golden hour
-          bg: 'linear-gradient(180deg, #2d1b4e 0%, #6b3a7d 15%, #c97b8b 40%, #f4a582 65%, #fdd6b0 85%, #f1dbb6 100%)',
-          scene: 'sunset',
-          cloudColor: '#fff8f0',
-          cloudShadow: '#e8c0a8',
-          hillColors: ['#7d9b5f', '#4a8b5c', '#2d6b4f'],
+          // 1. Little Kriya — warm pink/purple
+          bg: 'linear-gradient(180deg, #1a0a2e 0%, #44107a 40%, #893168 70%, #ff6b9d 100%)',
+          stars: ['#ff6b9d', '#f9a8d4', '#c084fc', '#ffc0e0'],
+          count: 20,
         },
         {
-          // Slide 2: Howl's sky — classic Ghibli daytime blue with warm horizon
-          bg: 'linear-gradient(180deg, #1a2a5e 0%, #3a6fa0 20%, #7db8d4 45%, #8FB1E9 60%, #c7dff0 78%, #e8d5e0 100%)',
-          scene: 'daytime',
-          cloudColor: '#ffffff',
-          cloudShadow: '#c7dff0',
-          hillColors: ['#A6D784', '#8CBF88', '#5a8a5c'],
+          // 2. Blue dress — soft blue/violet
+          bg: 'linear-gradient(180deg, #0f172a 0%, #1e3a5f 35%, #6366f1 70%, #a78bfa 100%)',
+          stars: ['#a78bfa', '#c4b5fd', '#818cf8', '#e0e7ff'],
+          count: 20,
         },
         {
-          // Slide 3: Night sky — deep indigo with star field, radial for horizon glow
-          bg: 'radial-gradient(ellipse at 50% 100%, #3d4f7c 0%, #1e2952 30%, #131b3a 55%, #0a0e23 100%)',
-          scene: 'night',
-          hillColors: ['#1a2040', '#121830', '#0a0e20'],
+          // 3. Video — deep teal/emerald
+          bg: 'linear-gradient(180deg, #0a1628 0%, #155e75 40%, #0d9488 70%, #2dd4bf 100%)',
+          stars: ['#2dd4bf', '#5eead4', '#99f6e4', '#a7f3d0'],
+          count: 18,
         },
         {
-          // Slide 4: Mononoke forest — deep greens, firefly glow
-          bg: 'linear-gradient(180deg, #041A40 0%, #0a1a12 20%, #14332a 45%, #1a4d3a 70%, #2d6b4f 100%)',
-          scene: 'forest',
-          hillColors: ['#2d6b4f', '#1a4d3a', '#0a1a12'],
+          // 4. B&W portrait — rich golden/rose, extra beautiful
+          bg: 'radial-gradient(ellipse at 50% 100%, #44107a 0%, #1a0a2e 40%, #0a0618 70%)',
+          stars: ['#fbbf24', '#f9a8d4', '#fcd34d', '#ff6b9d', '#c084fc', '#fffbeb'],
+          count: 40,
         },
         {
-          // Final: Magical — celestial pink aurora with rising sparkles
+          // Final slide — celestial pink
           bg: 'radial-gradient(ellipse at 50% 80%, #7b4a9e 0%, #3d1d6b 35%, #1a0a2e 70%)',
-          scene: 'magic',
+          stars: ['#f9a8d4', '#c084fc', '#ff6b9d', '#e0b0ff', '#ffc0e0'],
+          count: 30,
         },
       ];
 
@@ -844,159 +732,23 @@
         setTimeout(startWrapped, 3500);
       });
 
-      // ---- GHIBLI SCENE BUILDER ----
-      function buildGhibliScene(container, scene) {
+      // ---- RISING STARS BUILDER ----
+      function buildScene(container, scene) {
         container.innerHTML = '';
-
-        // 1. Fluffy cumulus clouds (sunset + daytime scenes)
-        if (scene.scene === 'sunset' || scene.scene === 'daytime') {
-          // Far clouds (small, slow, faded)
-          for (let i = 0; i < 3; i++) {
-            const c = document.createElement('div');
-            c.className = 'ghibli-cloud cloud-far';
-            c.style.width = (60 + Math.random() * 80) + 'px';
-            c.style.height = (20 + Math.random() * 15) + 'px';
-            c.style.background = scene.cloudShadow;
-            c.style.top = (8 + i * 10 + Math.random() * 5) + '%';
-            c.style.animationDelay = (-Math.random() * 45) + 's';
-            container.appendChild(c);
-          }
-          // Mid clouds
-          for (let i = 0; i < 2; i++) {
-            const c = document.createElement('div');
-            c.className = 'ghibli-cloud cloud-mid';
-            c.style.width = (100 + Math.random() * 100) + 'px';
-            c.style.height = (30 + Math.random() * 20) + 'px';
-            c.style.background = `linear-gradient(180deg, ${scene.cloudColor} 60%, ${scene.cloudShadow})`;
-            c.style.top = (15 + i * 12 + Math.random() * 8) + '%';
-            c.style.animationDelay = (-Math.random() * 30) + 's';
-            container.appendChild(c);
-          }
-          // Near cloud (big, bright, fast)
-          const near = document.createElement('div');
-          near.className = 'ghibli-cloud cloud-near';
-          near.style.width = (160 + Math.random() * 80) + 'px';
-          near.style.height = (45 + Math.random() * 20) + 'px';
-          near.style.background = `linear-gradient(180deg, ${scene.cloudColor} 50%, ${scene.cloudShadow})`;
-          near.style.top = (20 + Math.random() * 15) + '%';
-          near.style.animationDelay = (-Math.random() * 20) + 's';
-          container.appendChild(near);
-        }
-
-        // 2. Rolling hills silhouette (sunset, daytime, forest, night)
-        if (scene.hillColors) {
-          const hills = document.createElement('div');
-          hills.className = 'ghibli-hills';
-          // 3 layers of overlapping hills using radial gradients
-          const [c1, c2, c3] = scene.hillColors;
-          hills.style.background = `
-            radial-gradient(ellipse at 25% 100%, ${c1} 0%, transparent 55%),
-            radial-gradient(ellipse at 75% 100%, ${c2} 0%, transparent 50%),
-            radial-gradient(ellipse at 50% 100%, ${c3} 0%, transparent 65%)
-          `;
-          container.appendChild(hills);
-        }
-
-        // 3. Star field (night scene)
-        if (scene.scene === 'night') {
-          for (let i = 0; i < 55; i++) {
-            const s = document.createElement('div');
-            s.className = 'ghibli-star';
-            const size = 1 + Math.random() * 2.5;
-            s.style.width = size + 'px';
-            s.style.height = size + 'px';
-            s.style.left = (Math.random() * 100) + '%';
-            s.style.top = (Math.random() * 55) + '%';
-            s.style.animationDelay = (Math.random() * 4) + 's';
-            s.style.animationDuration = (2 + Math.random() * 4) + 's';
-            s.style.boxShadow = `0 0 ${size * 2}px #fffaf0, 0 0 ${size * 4}px rgba(190,169,222,0.3)`;
-            container.appendChild(s);
-          }
-        }
-
-        // 4. Fireflies (forest scene)
-        if (scene.scene === 'forest') {
-          const flyColors = ['#d4e85e', '#a8d840', '#f0e68c', '#c8e060'];
-          for (let i = 0; i < 18; i++) {
-            const f = document.createElement('div');
-            f.className = 'ghibli-firefly';
-            const size = 3 + Math.random() * 4;
-            const col = flyColors[i % flyColors.length];
-            f.style.width = size + 'px';
-            f.style.height = size + 'px';
-            f.style.left = (10 + Math.random() * 80) + '%';
-            f.style.top = (15 + Math.random() * 55) + '%';
-            f.style.background = col;
-            f.style.boxShadow = `0 0 ${size*3}px ${col}, 0 0 ${size*8}px ${col}50`;
-            f.style.setProperty('--fx', (Math.random() * 50 - 25) + 'px');
-            f.style.setProperty('--fy', (Math.random() * 40 - 20) + 'px');
-            f.style.setProperty('--fx2', (Math.random() * 70 - 35) + 'px');
-            f.style.setProperty('--fy2', (Math.random() * 50 - 40) + 'px');
-            f.style.setProperty('--fly-dur', (5 + Math.random() * 5) + 's');
-            f.style.setProperty('--fly-delay', (Math.random() * 5) + 's');
-            container.appendChild(f);
-          }
-        }
-
-        // 5. Floating pollen / dust motes (sunset scene)
-        if (scene.scene === 'sunset') {
-          const moteColors = ['#fdd6b0', '#f4a582', '#ffcc99', '#ffe0c0'];
-          for (let i = 0; i < 15; i++) {
-            const m = document.createElement('div');
-            m.className = 'ghibli-mote';
-            const size = 2 + Math.random() * 4;
-            const col = moteColors[i % moteColors.length];
-            m.style.width = size + 'px';
-            m.style.height = size + 'px';
-            m.style.left = (Math.random() * 100) + '%';
-            m.style.top = (30 + Math.random() * 50) + '%';
-            m.style.background = col;
-            m.style.boxShadow = `0 0 ${size*2}px ${col}80`;
-            m.style.setProperty('--mote-y', (-30 - Math.random() * 40) + 'px');
-            m.style.setProperty('--mote-x', (Math.random() * 30 - 15) + 'px');
-            m.style.setProperty('--mote-dur', (6 + Math.random() * 6) + 's');
-            m.style.setProperty('--mote-delay', (Math.random() * 6) + 's');
-            container.appendChild(m);
-          }
-        }
-
-        // 6. Magical rising sparkles (magic/final scene)
-        if (scene.scene === 'magic') {
-          const spColors = ['#f9a8d4', '#c084fc', '#ff6b9d', '#e0b0ff', '#ffc0e0'];
-          for (let i = 0; i < 25; i++) {
-            const sp = document.createElement('div');
-            sp.className = 'ghibli-sparkle';
-            const col = spColors[i % spColors.length];
-            sp.style.left = (5 + Math.random() * 90) + '%';
-            sp.style.top = (50 + Math.random() * 45) + '%';
-            sp.style.background = col;
-            sp.style.boxShadow = `0 0 6px ${col}, 0 0 12px ${col}60`;
-            sp.style.setProperty('--sp-dur', (3 + Math.random() * 4) + 's');
-            sp.style.setProperty('--sp-delay', (Math.random() * 5) + 's');
-            container.appendChild(sp);
-          }
-        }
-
-        // 7. Gentle motes for daytime scene (dandelion-like)
-        if (scene.scene === 'daytime') {
-          const dayMotes = ['#ffffff', '#f0f0ff', '#e8f0ff'];
-          for (let i = 0; i < 10; i++) {
-            const m = document.createElement('div');
-            m.className = 'ghibli-mote';
-            const size = 2 + Math.random() * 3;
-            const col = dayMotes[i % dayMotes.length];
-            m.style.width = size + 'px';
-            m.style.height = size + 'px';
-            m.style.left = (Math.random() * 100) + '%';
-            m.style.top = (20 + Math.random() * 50) + '%';
-            m.style.background = col;
-            m.style.boxShadow = `0 0 ${size*2}px ${col}`;
-            m.style.setProperty('--mote-y', (-20 - Math.random() * 30) + 'px');
-            m.style.setProperty('--mote-x', (Math.random() * 20 - 10) + 'px');
-            m.style.setProperty('--mote-dur', (8 + Math.random() * 6) + 's');
-            m.style.setProperty('--mote-delay', (Math.random() * 8) + 's');
-            container.appendChild(m);
-          }
+        for (let i = 0; i < scene.count; i++) {
+          const s = document.createElement('div');
+          s.className = 'rising-star';
+          const size = 2 + Math.random() * 4;
+          const col = scene.stars[i % scene.stars.length];
+          s.style.width = size + 'px';
+          s.style.height = size + 'px';
+          s.style.left = (5 + Math.random() * 90) + '%';
+          s.style.bottom = (2 + Math.random() * 15) + '%';
+          s.style.background = col;
+          s.style.boxShadow = `0 0 ${size * 2}px ${col}, 0 0 ${size * 5}px ${col}50`;
+          s.style.setProperty('--star-dur', (3 + Math.random() * 5) + 's');
+          s.style.setProperty('--star-delay', (Math.random() * 6) + 's');
+          container.appendChild(s);
         }
       }
 
@@ -1146,10 +898,10 @@
           if (slides[index]._video) {
             slides[index]._video.play().catch(() => {});
           }
-          // Apply Ghibli scene for this slide
-          const sceneData = GHIBLI_SCENES[index % GHIBLI_SCENES.length];
+          // Apply scene for this slide
+          const sceneData = SLIDE_SCENES[index % SLIDE_SCENES.length];
           bg.style.background = sceneData.bg;
-          buildGhibliScene(ghibliScene, sceneData);
+          buildScene(ghibliScene, sceneData);
 
           // Update progress segments
           segments.forEach((s, i) => {
