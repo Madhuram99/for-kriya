@@ -361,6 +361,31 @@
       100% { transform: translateY(-100px) scale(1.2); opacity: 0; }
     }
 
+    /* Replay button on final slide */
+    .replay-btn {
+      margin-top: 2rem;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50px;
+      color: rgba(255, 255, 255, 0.6);
+      font-family: 'Quicksand', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 0.5rem 1.5rem;
+      cursor: pointer;
+      letter-spacing: 1px;
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+    .wrapped-slide.show .replay-btn {
+      animation: captionIn 0.5s 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    .replay-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+    }
+
     /* subtext under question */
     .subtext {
       color: rgba(255, 255, 255, 0.4);
@@ -521,7 +546,7 @@
       let offsetY = 0;
       let dodgeCooldown = false;
 
-      noButton.addEventListener('mouseenter', () => {
+      function dodgeNoButton() {
         if (dodgeCooldown) return;
         dodgeCooldown = true;
         setTimeout(() => { dodgeCooldown = false; }, 300);
@@ -559,7 +584,16 @@
           yesButton.style.fontSize = `${fontSize}px`;
           noButton.textContent = NO_BUTTON_MESSAGES[Math.min(dodgeCount, NO_BUTTON_MESSAGES.length - 1)];
         }
-      });
+      }
+
+      // Desktop: dodge on hover
+      noButton.addEventListener('mouseenter', dodgeNoButton);
+
+      // Mobile: intercept touch and dodge instead of clicking
+      noButton.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        dodgeNoButton();
+      }, { passive: false });
 
       // ---- YES → WRAPPED ----
       yesButton.addEventListener('click', () => {
@@ -578,7 +612,10 @@
         confetti({ ...defaults, particleCount: 25, scalar: 3 });
         confetti({ ...defaults, particleCount: 10, scalar: 4 });
 
-        setTimeout(startWrapped, 2000);
+        // Preload slideshow photos during YAAYYY screen
+        WRAPPED_PHOTOS.forEach(src => { new Image().src = src; });
+
+        setTimeout(startWrapped, 3500);
       });
 
       // ---- SPOTIFY WRAPPED SLIDESHOW ----
@@ -610,7 +647,7 @@
 
         const tapHint = document.createElement('div');
         tapHint.className = 'wrapped-tap-hint';
-        tapHint.textContent = 'tap anywhere to skip';
+        tapHint.textContent = 'tap to continue →';
 
         overlay.appendChild(progressContainer);
         overlay.appendChild(tapHint);
@@ -659,6 +696,7 @@
           </div>
           <div class="final-subtitle">you were always the prettiest person in every room 🥹</div>
           <div class="final-sign-off">— yours, always 💌</div>
+          <button class="replay-btn" id="replayBtn">watch again ↻</button>
         `;
         // Add floating hearts to final slide
         const heartEmojis = ['💗', '💕', '🩷', '💜', '🌸'];
@@ -744,8 +782,18 @@
           }
         }
 
-        overlay.addEventListener('click', () => {
+        overlay.addEventListener('click', (e) => {
+          if (e.target.id === 'replayBtn') return;
           nextSlide();
+        });
+
+        // Replay button restarts from first slide
+        finalSlide.querySelector('#replayBtn').addEventListener('click', (e) => {
+          e.stopPropagation();
+          current = 0;
+          tapHint.style.display = '';
+          tapHint.textContent = 'tap to continue →';
+          showSlide(0);
         });
 
         setTimeout(() => showSlide(0), 100);
